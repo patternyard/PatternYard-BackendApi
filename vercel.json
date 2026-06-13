@@ -7,6 +7,13 @@
             "includeFiles": "{api/**,utils/**,*.png,*.txt}"
         }
     },
+    "redirects": [
+        {
+            "source": "/",
+            "destination": "https://penguinmod.com",
+            "permanent": false
+        }
+    ],
     "rewrites": [
         {
             "source": "/:path*",
