@@ -1,8 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
-const Magic = require("mmmagic");
-const magic = new Magic.Magic(Magic.MAGIC_MIME_TYPE);
 const UserManager = require("../../../db/UserManager");
 
 /**
@@ -49,39 +47,43 @@ module.exports = (app, utils) => {
                 path.join(utils.homeDir, pictureName.path),
             );
 
-            const allowedTypes = ["image/png", "image/jpeg"];
+            const allowedFormats = ["png", "jpeg"];
 
             // ATODO: make sure the pfp isnt too big
 
-            magic.detect(picture, async (err, result) => {
-                if (err) {
-                    return utils.error(res, 400, "Invalid file type");
-                }
+            // Validate the image type with sharp instead of mmmagic (native
+            // libmagic does not build on serverless). sharp is already used to
+            // resize below, so this adds no new dependency.
+            let format;
+            try {
+                format = (await sharp(picture).metadata()).format;
+            } catch (e) {
+                return utils.error(res, 400, "Invalid file type");
+            }
 
-                if (!allowedTypes.includes(result)) {
-                    return utils.error(res, 400, "Invalid file type");
-                }
+            if (!allowedFormats.includes(format)) {
+                return utils.error(res, 400, "Invalid file type");
+            }
 
-                let resized_picture;
+            let resized_picture;
 
-                try {
-                    resized_picture = await sharp(picture)
-                        .resize(100, 100)
-                        .toBuffer();
-                } catch (e) {
-                    console.warn(`Sharp error: ${e}`);
-                    return utils.error(res, 400, "Invalid image");
-                }
+            try {
+                resized_picture = await sharp(picture)
+                    .resize(100, 100)
+                    .toBuffer();
+            } catch (e) {
+                console.warn(`Sharp error: ${e}`);
+                return utils.error(res, 400, "Invalid image");
+            }
 
-                await utils.UserManager.setProfilePicture(
-                    username,
-                    resized_picture,
-                );
+            await utils.UserManager.setProfilePicture(
+                username,
+                resized_picture,
+            );
 
-                res.status(200);
-                res.header("Content-Type", "application/json");
-                res.json({ success: true });
-            });
+            res.status(200);
+            res.header("Content-Type", "application/json");
+            res.json({ success: true });
         },
     );
 };

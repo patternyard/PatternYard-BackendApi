@@ -6,7 +6,10 @@ const ULID = require("ulid");
 const Minio = require("minio");
 const fs = require("fs");
 const path = require("path");
-var prompt = require("prompt-sync")();
+// NOTE: do not invoke prompt-sync at module load — `require("prompt-sync")()`
+// attaches to stdin, which hangs serverless cold starts (no TTY). Defer the
+// invocation to call time (only reached by the disabled reset() CLI flow).
+const promptSync = require("prompt-sync");
 const Mailjet = require("node-mailjet");
 const os = require("os");
 const pmp_protobuf = require("pmp-protobuf");
@@ -680,7 +683,7 @@ class UserManager {
         throw new Error("Resetting is disabled");
 
         if (!understands) {
-            let unde = prompt("This deletes ALL DATA. Are you sure? (Y/n) ");
+            let unde = promptSync()("This deletes ALL DATA. Are you sure? (Y/n) ");
             if (typeof unde !== "string") {
                 return;
             }

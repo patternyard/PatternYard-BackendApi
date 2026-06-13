@@ -1,8 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
-const Magic = require("mmmagic");
-const magic = new Magic.Magic(Magic.MAGIC_MIME_TYPE);
 const UserManager = require("../../../db/UserManager");
 
 /**
@@ -59,43 +57,40 @@ module.exports = (app, utils) => {
                 path.join(utils.homeDir, pictureName.path),
             );
 
-            const allowedTypes = ["image/png", "image/jpeg", "image/gif"];
+            const allowedFormats = ["png", "jpeg", "gif"];
 
-            magic.detect(picture, async (err, result) => {
-                if (err) {
-                    console.error(`Magic error: ${err}`);
-                    return utils.error(res, 400, "Invalid file type");
-                }
+            // Validate the image type with sharp instead of mmmagic (native
+            // libmagic does not build on serverless). sharp is already used to
+            // resize below, so this adds no new dependency.
+            let format;
+            try {
+                format = (await sharp(picture).metadata()).format;
+            } catch (e) {
+                console.error(`Image parse error: ${e}`);
+                return utils.error(res, 400, "Invalid file type");
+            }
 
-                if (!allowedTypes.includes(result)) {
-                    return utils.error(
-                        res,
-                        400,
-                        `Invalid file type, ${result}`,
-                    );
-                }
+            if (!allowedFormats.includes(format)) {
+                return utils.error(res, 400, `Invalid file type, ${format}`);
+            }
 
-                const resized_picture =
-                    result == "image/gif"
-                        ? picture
-                        : await sharp(picture).resize(100, 100).toBuffer();
+            const resized_picture =
+                format == "gif"
+                    ? picture
+                    : await sharp(picture).resize(100, 100).toBuffer();
 
-                await utils.UserManager.setProfilePicture(
-                    target,
-                    resized_picture,
-                );
+            await utils.UserManager.setProfilePicture(target, resized_picture);
 
-                utils.logs.sendAdminUserLog(
-                    username,
-                    target,
-                    "Admin or mod has updated user's profile picture.",
-                    0xf4a220,
-                );
+            utils.logs.sendAdminUserLog(
+                username,
+                target,
+                "Admin or mod has updated user's profile picture.",
+                0xf4a220,
+            );
 
-                res.status(200);
-                res.header("Content-Type", "application/json");
-                res.json({ success: true });
-            });
+            res.status(200);
+            res.header("Content-Type", "application/json");
+            res.json({ success: true });
         },
     );
 };
