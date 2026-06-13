@@ -116,7 +116,7 @@ console.error = (...args) => {
     console.error = fake;
 };
 
-(async () => {
+async function main() {
     // TODO: just have UM load from env
     await UserManager.init(MAXVIEWS, VIEWRESETRATE);
 
@@ -347,7 +347,24 @@ console.error = (...args) => {
         error(res, 500, "InternalError");
     });
 
-    app.listen(PORT, () => {
-        console.log(`API is listening on port ${PORT}`);
+}
+
+// Lazily run one-time initialization (DB connect, route loading) and memoize
+// the resulting promise so it only happens once per warm serverless instance.
+let _readyPromise = null;
+function init() {
+    if (!_readyPromise) _readyPromise = main();
+    return _readyPromise;
+}
+
+module.exports = { app, init };
+
+// Only bind a port when executed directly (local dev / container hosts).
+// On Vercel the app is invoked through api/index.js instead.
+if (require.main === module) {
+    init().then(() => {
+        app.listen(PORT, () => {
+            console.log(`API is listening on port ${PORT}`);
+        });
     });
-})();
+}
