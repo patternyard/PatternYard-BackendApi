@@ -1,5 +1,7 @@
 # Tokens
 .env
+.env.*
+!.env.template
 
 # Node
 node_modules
@@ -12,3 +14,4 @@ System Volume Information
 
 # Multifile
 tmp
+.vercel

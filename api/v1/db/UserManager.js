@@ -3,7 +3,7 @@ const { randomInt, randomBytes, createHash } = require("node:crypto");
 const bcrypt = require("bcrypt");
 const { MongoClient } = require("mongodb");
 const ULID = require("ulid");
-const Minio = require("minio");
+const { BlobStorageClient } = require("./BlobStorage");
 const fs = require("fs");
 const path = require("path");
 // NOTE: do not invoke prompt-sync at module load — `require("prompt-sync")()`
@@ -222,18 +222,9 @@ class UserManager {
         this.tagWeights = this.db.collection("tagWeights");
         this.performance_logging = this.db.collection("system.profile");
 
-        // Setup minio
-
-        this.minioClient = new Minio.Client({
-            endPoint: process.env.MinioEndPoint,
-            port: Number(process.env.MinioPort),
-            useSSL: false,
-            accessKey: process.env.MinioClientID,
-            secretKey: process.env.MinioClientSecret,
-            retryOptions: {
-                maximumRetryCount: 0,
-            },
-        });
+        // Object storage: Vercel Blob behind a MinIO-compatible adapter.
+        // `minioClient` keeps its name so the ~15 existing call sites are unchanged.
+        this.minioClient = new BlobStorageClient();
         // project bucket
         await this._makeBucket("projects");
         // project thumbnail bucket
