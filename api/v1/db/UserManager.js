@@ -34,7 +34,13 @@ class UserManager {
      */
     async init(maxviews, viewresetrate) {
         this.client = new MongoClient(
-            process.env.MongoUri || "mongodb://localhost:27017",
+            // MongoUri is the project's original var; MONGODB_URI / DATABASE_URL
+            // are what the Vercel MongoDB Atlas integration injects. Accept any
+            // so the same code works locally and on Vercel without renaming env.
+            process.env.MongoUri ||
+                process.env.MONGODB_URI ||
+                process.env.DATABASE_URL ||
+                "mongodb://localhost:27017",
         );
         await this.client.connect();
         this.db = this.client.db("pm_apidata");

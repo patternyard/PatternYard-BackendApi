@@ -1,6 +1,7 @@
 require("dotenv").config();
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const { RedisRateLimitStore } = require("./api/v1/db/RedisRateLimitStore");
 const express = require("express");
 const endpointLoader = require("./api/endpointLoader");
 const um = require("./api/v1/db/UserManager");
@@ -15,6 +16,24 @@ const ipaddr = require("ipaddr.js");
 const { promisify } = require("util");
 const mcache = require("memory-cache");
 require("colors");
+
+// Drop-in replacement for express-rate-limit that backs every limiter with
+// Upstash Redis instead of the default per-process MemoryStore (which does not
+// work across serverless invocations). Each limiter gets its own Redis key
+// namespace so different routes never share a counter. Falls back to the
+// default in-memory store if Redis credentials are not configured (e.g. local
+// dev without Upstash), so behaviour degrades gracefully rather than crashing.
+let _rlNamespace = 0;
+function rateLimiterWithRedis(options = {}) {
+    if (options.store || !process.env.KV_REST_API_URL) {
+        return rateLimit(options);
+    }
+    _rlNamespace += 1;
+    return rateLimit({
+        ...options,
+        store: new RedisRateLimitStore({ prefix: `rl:${_rlNamespace}:` }),
+    });
+}
 
 function escapeXML(unsafe) {
     unsafe = String(unsafe);
@@ -257,7 +276,7 @@ async function main() {
             get: get_cache,
             key: get_key,
         },
-        rateLimiter: rateLimit,
+        rateLimiter: rateLimiterWithRedis,
         file_size_limit: file_size_limit,
         cachinator: (refreshTime) => ({
             curr: null,
