@@ -307,8 +307,12 @@ async function main() {
                 origin: function (origin, callback) {
                     const whitelist = [
                         process.env.HomeURL,
+                        process.env.StudioURL,
+                        process.env.HomeURL
+                            ? process.env.HomeURL.replace("://", "://www.")
+                            : undefined,
                         "http://localhost:5173",
-                    ];
+                    ].filter(Boolean);
                     const idxWebPreview = ".cloudworkstations.dev"; //project idx sigma development
                     if (
                         !origin ||
