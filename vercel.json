@@ -10,7 +10,7 @@
     "redirects": [
         {
             "source": "/",
-            "destination": "https://penguinmod.com",
+            "destination": "https://patternyard.dev",
             "permanent": false
         }
     ],

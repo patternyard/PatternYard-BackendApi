@@ -80,7 +80,7 @@ module.exports = (app, utils) => {
                         `${utils.env.ApiURL}/api/v1/users/getpfp?username=${username}`,
                     ),
                     url: String(
-                        "https://penguinmod.com/profile?user=" + username,
+                        "https://patternyard.dev/profile?user=" + username,
                     ),
                 },
                 0xc40404,

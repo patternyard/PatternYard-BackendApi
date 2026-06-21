@@ -121,7 +121,7 @@ module.exports = (app, utils) => {
         <p style='font-family: "Helvetica Neue", Arial, sans-serif;'>If you did not ask to reset your password, you can delete this email or ignore it.</p>
             <p style='font-family: "Helvetica Neue", Arial, sans-serif;'>Do not forward, share, or reply to this email. Replies will not be seen or answered.</p>
 
-        <img src="https://penguinmod.com/favicon.png" alt="PatternYard" width="64" height="64" style="width: 64px; height: 64px;">
+        <img src="https://patternyard.dev/favicon.png" alt="PatternYard" width="64" height="64" style="width: 64px; height: 64px;">
         </body></html>`;
             const emailPlainText = `PatternYard Password Reset
 
