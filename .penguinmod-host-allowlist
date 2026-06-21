@@ -7,34 +7,9 @@
 **/*.md
 **/*.mdx
 
-# --- Baseline-seeded (2026-06-20) ---------------------------------------------
-# These files already carried upstream hosts from upstream engine code at
-# rollout time. Allowlisting them keeps the guard green today AND lets future
-# upstream merges into wycats-main land here without breaking CI. The guard
-# still fails on NEW host refs in any other (patternyard) file. This list
-# doubles as the known upstream-host debt inventory for this repo.
-404-noproject.html
-api/v1/db/UserManager.js
-api/v1/routes/meta/home.js
-api/v1/routes/misc/setLastPolicyUpdate.js
-api/v1/routes/misc/setProfanityList.js
-api/v1/routes/projects/modActions/canBeFeatured.js
-api/v1/routes/projects/modActions/deleteThumb.js
-api/v1/routes/projects/modActions/manualFeature.js
-api/v1/routes/projects/modActions/reject/deleteProject.js
-api/v1/routes/projects/modActions/reject/hardRejectProject.js
-api/v1/routes/projects/modActions/reject/restore.js
-api/v1/routes/projects/modActions/reject/softReject.js
-api/v1/routes/projects/modActions/toggleAccountCreation.js
-api/v1/routes/projects/modActions/toggleUploading.js
-api/v1/routes/projects/modActions/toggleViewing.js
-api/v1/routes/users/login/resetpassword/sendEmail.js
-api/v1/routes/users/login/resetpassword/sendVerificationEmail.js
-api/v1/routes/users/mod/admin_only/banIP.js
-api/v1/routes/users/mod/admin_only/banUserIP.js
-api/v1/routes/users/mod/admin_only/changeProjectID.js
-api/v1/routes/users/mod/admin_only/deleteAccount.js
-api/v1/routes/users/mod/admin_only/massBan.js
-api/v1/routes/users/mod/ban.js
-utils/Logs.js
-vercel.json
+# --- Runtime host debt CLOSED 2026-06-21 -------------------------------------
+# The baseline-seeded runtime files (routes, Logs.js, UserManager.js, vercel.json,
+# 404-noproject.html, email templates) have been repointed to patternyard.dev and
+# REMOVED from this allowlist, re-arming the guard. Any future upstream merge that
+# reintroduces a *.penguinmod.com runtime host into these files will now FAIL CI
+# (by design) and must be repointed per the canonical host map.

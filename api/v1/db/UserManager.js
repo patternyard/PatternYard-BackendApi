@@ -5231,7 +5231,7 @@ class UserManager {
                 Messages: [
                     {
                         From: {
-                            Email: "no-reply@penguinmod.com",
+                            Email: "no-reply@patternyard.dev",
                             Name: "PatternYard",
                         },
                         To: [
