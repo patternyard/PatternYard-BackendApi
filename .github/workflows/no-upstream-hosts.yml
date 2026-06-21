@@ -6,7 +6,7 @@ name: No upstream hosts
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [wycats-main]
 
 jobs:
   no-upstream-hosts:
