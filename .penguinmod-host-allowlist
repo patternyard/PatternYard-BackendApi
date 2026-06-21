@@ -1,0 +1,40 @@
+# Files exempt from the "no upstream hosts" CI guard.
+# gitignore-style path globs; one per line. Only tooling that intentionally
+# references the upstream host to REWRITE it, migration provenance, and human
+# documentation belong here. Application/runtime code must never be hand-added.
+
+# Documentation legitimately names the upstream project and its hosts.
+**/*.md
+**/*.mdx
+
+# --- Baseline-seeded (2026-06-20) ---------------------------------------------
+# These files already carried upstream hosts from upstream engine code at
+# rollout time. Allowlisting them keeps the guard green today AND lets future
+# upstream merges into wycats-main land here without breaking CI. The guard
+# still fails on NEW host refs in any other (patternyard) file. This list
+# doubles as the known upstream-host debt inventory for this repo.
+404-noproject.html
+api/v1/db/UserManager.js
+api/v1/routes/meta/home.js
+api/v1/routes/misc/setLastPolicyUpdate.js
+api/v1/routes/misc/setProfanityList.js
+api/v1/routes/projects/modActions/canBeFeatured.js
+api/v1/routes/projects/modActions/deleteThumb.js
+api/v1/routes/projects/modActions/manualFeature.js
+api/v1/routes/projects/modActions/reject/deleteProject.js
+api/v1/routes/projects/modActions/reject/hardRejectProject.js
+api/v1/routes/projects/modActions/reject/restore.js
+api/v1/routes/projects/modActions/reject/softReject.js
+api/v1/routes/projects/modActions/toggleAccountCreation.js
+api/v1/routes/projects/modActions/toggleUploading.js
+api/v1/routes/projects/modActions/toggleViewing.js
+api/v1/routes/users/login/resetpassword/sendEmail.js
+api/v1/routes/users/login/resetpassword/sendVerificationEmail.js
+api/v1/routes/users/mod/admin_only/banIP.js
+api/v1/routes/users/mod/admin_only/banUserIP.js
+api/v1/routes/users/mod/admin_only/changeProjectID.js
+api/v1/routes/users/mod/admin_only/deleteAccount.js
+api/v1/routes/users/mod/admin_only/massBan.js
+api/v1/routes/users/mod/ban.js
+utils/Logs.js
+vercel.json
