@@ -11,6 +11,8 @@ on:
 jobs:
   no-upstream-hosts:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: patternyard/PatternYard-Architecture/.github/actions/no-upstream-hosts@main
+      - uses: patternyard/PatternYard-Architecture/.github/actions/no-upstream-hosts@v1
